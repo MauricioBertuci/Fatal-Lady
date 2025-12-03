@@ -76,9 +76,9 @@ df_fabricante = query_df(sql_fabricante)
 
 # 5 Métodos de pagamento
 sql_pagamento = """
-SELECT metodopagamento, COUNT(*) AS total
+SELECT metodo_pagamento, COUNT(*) AS total
 FROM pagamentos
-GROUP BY metodopagamento
+GROUP BY metodo_pagamento
 ORDER BY total DESC
 """
 df_pagamento = query_df(sql_pagamento)
@@ -204,7 +204,7 @@ with tab3:
         if df_pagamento.empty:
             st.info("Sem dados de pagamento.")
         else:
-            fig_pag = px.bar(df_pagamento, x="metodopagamento", y="total", text="total", title="Métodos de Pagamento")
+            fig_pag = px.bar(df_pagamento, x="metodo_pagamento", y="total", text="total", title="Métodos de Pagamento")
             st.plotly_chart(fig_pag, use_container_width=True)
 
 
