@@ -119,7 +119,9 @@
               </div>
             </div>
 
-            <button type="submit" class="form-submit">Finalizar Pagamento</button>
+            <button type="submit" class="form-submit">
+              <span>Finalizar Pagamento</span>
+            </button>
           </form>
 
           {% elif tipo_pagamento_selecionado == 'cartao_debito' %}
@@ -170,7 +172,9 @@
               </div>
             </div>
 
-            <button type="submit" class="form-submit">Pagar com Débito</button>
+            <button type="submit" class="form-submit">
+              <span>Pagar com Débito</span>
+            </button>
           </form>
 
           {% elif tipo_pagamento_selecionado == 'pix' %}
@@ -214,7 +218,9 @@
 
               <form id="pix-confirm-form" action="/pagamentos/pix/confirmar" method="post" class="pix-confirm-section">
                 <input type="hidden" name="pedido_id" value="{{ pedido.id }}" />
-                <button type="submit" class="pix-confirm-btn" id="pix-confirm-btn">Já realizei o pagamento</button>
+                <button type="submit" class="pix-confirm-btn" id="pix-confirm-btn">
+                  <span>Já realizei o pagamento</span>
+                </button>
               </form>
 
               <div id="pix-regen" class="pix-expired">
@@ -271,7 +277,7 @@
                 }
 
                 const totalSeconds = Math.floor(diff / 1000);
-                const minutes = String(Math.floor(totalSeconds / 1200)).padStart(2, "0");
+                const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
                 const seconds = String(totalSeconds % 60).padStart(2, "0");
 
                 countdownEl.textContent = minutes + ":" + seconds;
@@ -298,7 +304,9 @@
                 <input type="text" name="codigo_barras" placeholder="00000.00000 00000.000000 00000.000000 0 00000000000000" required />
               </div>
             </div>
-            <button type="submit" class="form-submit">Gerar Boleto</button>
+            <button type="submit" class="form-submit">
+              <span>Gerar Boleto</span>
+            </button>
           </form>
 
           {% else %}
@@ -331,5 +339,42 @@
     </div>
   </main>
 
+  <!-- Loading genérico nos botões de pagamento -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function attachLoading(formSelector, buttonSelector) {
+        const form = document.querySelector(formSelector);
+        if (!form) return;
+        const button = form.querySelector(buttonSelector);
+        if (!button) return;
+
+        form.addEventListener("submit", function (e) {
+          if (button.disabled) {
+            e.preventDefault();
+            return;
+          }
+          button.disabled = true;
+          button.classList.add("btn-loading");
+        });
+      }
+
+      attachLoading('form[action="/pagamentos/cartao-credito"]', ".form-submit");
+      attachLoading('form[action="/pagamentos/cartao-debito"]', ".form-submit");
+      attachLoading('form[action="/pagamentos/boleto"]', ".form-submit");
+
+      const pixForm = document.getElementById("pix-confirm-form");
+      const pixBtn = document.getElementById("pix-confirm-btn");
+      if (pixForm && pixBtn) {
+        pixForm.addEventListener("submit", function (e) {
+          if (pixBtn.disabled) {
+            e.preventDefault();
+            return;
+          }
+          pixBtn.disabled = true;
+          pixBtn.classList.add("btn-loading");
+        });
+      }
+    });
+  </script>
 </body>
 </html>

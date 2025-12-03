@@ -45,25 +45,77 @@ document.addEventListener("DOMContentLoaded", () => {
       form.submit();
     };
 
-    btnPlus.addEventListener("click", () => {
-      qtyInput.value = parseInt(qtyInput.value, 10) + 1;
-      submitForm();
-    });
-
-    btnMinus.addEventListener("click", () => {
-      let currentValue = parseInt(qtyInput.value, 10);
-      if (currentValue > 1) {
-        qtyInput.value = currentValue - 1;
+    if (btnPlus) {
+      btnPlus.addEventListener("click", () => {
+        qtyInput.value = parseInt(qtyInput.value, 10) + 1;
         submitForm();
-      }
-    });
+      });
+    }
 
-    qtyInput.addEventListener("change", () => {
-      let currentValue = parseInt(parseInt(qtyInput.value, 10));
-      if (currentValue < 1 || isNaN(currentValue)) {
-        qtyInput.value = 1;
-      }
-      submitForm();
-    });
+    if (btnMinus) {
+      btnMinus.addEventListener("click", () => {
+        let currentValue = parseInt(qtyInput.value, 10);
+        if (currentValue > 1) {
+          qtyInput.value = currentValue - 1;
+          submitForm();
+        }
+      });
+    }
+
+    if (qtyInput) {
+      qtyInput.addEventListener("change", () => {
+        let currentValue = parseInt(qtyInput.value, 10);
+        if (currentValue < 1 || isNaN(currentValue)) {
+          qtyInput.value = 1;
+        }
+        submitForm();
+      });
+    }
   });
+
+  // ===============================
+  // CEP OBRIGATÓRIO + LOADING CHECKOUT
+  // ===============================
+
+  function getCepDigits() {
+    const cepInput = document.getElementById("cep-input");
+    if (!cepInput) return "";
+    return cepInput.value.replace(/\D/g, "");
+  }
+
+  function showCepError() {
+    const cepInput = document.getElementById("cep-input");
+    if (!cepInput) return;
+
+    cepInput.classList.add("input-error");
+    cepInput.focus();
+  }
+
+  const checkoutForm = document.getElementById("form-carrinho");
+  const checkoutButton = checkoutForm
+    ? checkoutForm.querySelector(".btn-checkout")
+    : null;
+
+  if (checkoutForm && checkoutButton) {
+    checkoutForm.addEventListener("submit", (e) => {
+      const cepDigits = getCepDigits();
+
+      // CEP precisa ser válido (8 dígitos)
+      if (cepDigits.length !== 8) {
+        e.preventDefault();
+        showCepError();
+        return;
+      }
+
+      // evita submit duplo
+      if (checkoutButton.disabled) {
+        e.preventDefault();
+        return;
+      }
+
+      // Ativa loading no botão
+      checkoutButton.disabled = true;
+      checkoutButton.classList.add("btn-loading");
+    });
+  }
 });
