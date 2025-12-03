@@ -251,7 +251,6 @@
                 </div>
               </div>
 
-              <div class="products-header-bottom" aria-hidden="true"></div>
             </div>
           </header>
 
@@ -260,9 +259,9 @@
             <section class="category-row" id="category-{{ group.grouper }}">
               <div class="category-header">
                 <h3 class="category-title">
-                  {% if group.list and group.list[0].categoria_nome is defined
-                  %} {{ group.list[0].categoria_nome }} {% else %} {{
-                  group.grouper }} {% endif %}
+                  {% if group.list and group.list[0].categoria_nome is defined %} 
+                    {{ group.list[0].categoria_nome }} {% else %} {{group.grouper }} 
+                  {% endif %}
                 </h3>
 
                 <div class="category-arrows">
@@ -280,10 +279,6 @@
                   </button>
                 </div>
               </div>
-
-              {% for c in categorias %}
-              <span>{{ c.nome }}</span>
-              {% endfor %}
 
               <div class="category-products" role="list">
                 {% for p in group.list %}
