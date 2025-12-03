@@ -586,3 +586,62 @@ footer hr {
 .shipping-results p {
     font-family: "Questrial", sans-serif;
 }
+
+/* ============================
+   ESTADO DE LOADING / ERRO CEP
+   ============================ */
+
+.btn-checkout[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Classe genérica de loading usada no carrinho e pagamentos */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.btn-loading::after {
+  content: "Carregando...";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Se o botão tiver span interno, esconde o texto durante o loading */
+.btn-loading span {
+  visibility: hidden;
+}
+
+/* CEP inválido */
+.input-error {
+  border-color: var(--main-red) !important;
+  box-shadow: 0 0 0 2px rgba(203, 19, 19, 0.2);
+}
+
+.cep-error-msg {
+  color: var(--main-red);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+/* Responsividade extra do input de CEP */
+@media (max-width: 480px) {
+  .cep-input-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cep-input-group #cep-input {
+    width: 100%;
+  }
+
+  .cep-input-group .btn-calculate {
+    width: 100%;
+  }
+}

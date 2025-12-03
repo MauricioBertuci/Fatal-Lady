@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Carrinho - Fatal Lady</title>
+    <title>Carrinho | Fatal Lady</title>
     <link
       rel="icon"
       href="/static/uploads/img/main_icon/icon.png"
@@ -47,8 +47,8 @@
           >
             <div class="item-image">
               <img
-                  src="{{ item.produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
-                  alt="{{ item.produto.nome }}"
+                src="{{ item.produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
+                alt="{{ item.produto.nome }}"
               />
             </div>
             <div class="item-details">
@@ -128,25 +128,66 @@
           <div class="summary-row">
             <div class="shipping-calculator">
               <p class="calculator-title">Calcular Frete e Prazo:</p>
-              
+
               <div class="cep-input-group">
-                  <input type="text" id="cep-input" placeholder="Seu CEP (00000-000)" maxlength="8" required>
-                  <button id="calculate-shipping-btn" class="btn-calculate" >CALCULAR</button>
+                <input
+                  type="text"
+                  id="cep-input"
+                  placeholder="Seu CEP (00000-000)"
+                  maxlength="9"
+                  required
+                />
+                <button
+                  id="calculate-shipping-btn"
+                  class="btn-calculate"
+                  type="button"
+                >
+                  CALCULAR
+                </button>
               </div>
-              
-              <div id="shipping-results" class="shipping-results" style="display:none; margin-top:10px;">
-                  <p><b>Endereço:</b> <span id="endereco"></span></p>
-                  <p><b>Frete:</b> R$ <span id="valor_frete"></span></p>
-                  <p><b>Prazo:</b> <span id="prazo"></span> dias</p>
-             </div>
+
+              <div
+                id="shipping-results"
+                class="shipping-results"
+                style="display: none; margin-top: 10px"
+              >
+                <p><b>Endereço:</b> <span id="endereco"></span></p>
+                <p><b>Frete:</b> R$ <span id="valor_frete"></span></p>
+                <p><b>Prazo:</b> <span id="prazo"></span> dias</p>
+              </div>
+            </div>
+          </div>
 
           <div class="summary-row total">
             <span>Total:</span>
             <span id="total">R$ {{ "%.2f"|format(total|float) }}</span>
           </div>
-          <form action="/checkout" method="post">
-            <button type="submit" class="btn-checkout">Finalizar Compra</button>
+
+          <!-- Form de checkout real -->
+          <form id="form-carrinho" action="/checkout" method="post">
+            <!-- Campos ocultos atualizados pelo frete-calcular.js -->
+            <input type="hidden" id="cepHidden" name="cep" />
+            <input
+              type="hidden"
+              id="enderecoHidden"
+              name="endereco_frete"
+            />
+            <input
+              type="hidden"
+              id="freteHidden"
+              name="valor_frete"
+            />
+            <input
+              type="hidden"
+              id="totalHidden"
+              name="valor_total_com_frete"
+            />
+
+            <button type="submit" class="btn-checkout">
+              <span>Finalizar Compra</span>
+            </button>
           </form>
+
           <a href="/produtos" class="btn-continue">Continuar Comprando</a>
         </aside>
       </div>
@@ -191,7 +232,7 @@
       </div>
       <hr />
       <p class="copy">Coffe and Code | © 2025 Todos os direitos reservados</p>
-    </footer> 
+    </footer>
 
     <script src="/static/js/frete-calcular.js"></script>
     <script src="/static/js/carrinho.js" defer></script>

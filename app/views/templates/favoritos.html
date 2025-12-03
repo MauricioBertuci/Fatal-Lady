@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meus Favoritos - Fatal Lady</title>
+    <title>Meus Favoritos | Fatal Lady</title>
     <link
       rel="icon"
       href="/static/uploads/img/main_icon/icon.png"
@@ -29,14 +29,14 @@
   <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}">
     {% include "_header_nav.html" %}
 
-    <main>
+    <main id="main" class="favorites-container" role="main">
       <section id="favorites-page" class="favorites-wrapper">
         <div class="container">
-          <div class="card-header" aria-hidden="false">
-            <h2>Meus favoritos</h2>
+          <header class="favorites-header" aria-hidden="false">
+            <h1>Meus Favoritos</h1>
             <p>Veja os produtos que você salvou na Fatal Lady.</p>
-          </div>
-      
+          </header>
+
           {% if not favoritos or favoritos|length == 0 %}
             <div class="favorites-empty">
               <h3>Você ainda não tem favoritos.</h3>
@@ -48,9 +48,7 @@
                 Ver catálogo
               </a>
             </div>
-            
           {% else %}
-            {# BLOCO COM FAVORITOS #}
             <div class="favorites-meta">
               <span>{{ favoritos|length }} produto(s) salvo(s)</span>
               <a href="/produtos" class="favorites-link">
@@ -61,34 +59,33 @@
             <div class="featured-grid">
               {% for produto in favoritos %}
                 <article class="featured-card favorite-card">
-                    <div class="featured-image">
-                      <img
-                        src="{{ produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
-                        alt="{{ produto.nome }}"
-                        loading="lazy"
-                      />
-                      <div class="favorite-badge">
-                        &#10084;
-                      </div>
+                  <div class="featured-image">
+                    <img
+                      src="{{ produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
+                      alt="{{ produto.nome }}"
+                      loading="lazy"
+                    />
+                    <div class="favorite-badge">
+                      &#10084;
                     </div>
+                  </div>
 
-                    <div class="featured-info">
-                      <span class="featured-category">
-                        {{ produto.categoria_nome or 'Coleção Fatal Lady' }}
+                  <div class="featured-info">
+                    <span class="featured-category">
+                      {{ produto.categoria_nome or 'Coleção Fatal Lady' }}
+                    </span>
+
+                    <h3 class="featured-name">
+                      {{ produto.nome }}
+                    </h3>
+
+                    <div class="favorite-price-row">
+                      <span class="featured-price">
+                        R$
+                        {{ "%.2f"|format(produto.preco)|replace('.', ',') }}
                       </span>
-
-                      <h3 class="featured-name">
-                        {{ produto.nome }}
-                      </h3>
-
-                      <div class="favorite-price-row">
-                        <span class="featured-price">
-                          R$
-                          {{ "%.2f"|format(produto.preco)|replace('.', ',') }}
-                        </span>
-                      </div>
                     </div>
-                  </a>
+                  </div>
 
                   <div class="favorite-actions">
                     <form
@@ -105,7 +102,7 @@
                         Ver produto
                       </button>
                     </form>
-
+                  </div>
                 </article>
               {% endfor %}
             </div>
@@ -113,6 +110,7 @@
         </div>
       </section>
     </main>
+
     <footer role="contentinfo">
       <div class="footer-links">
         <div>
@@ -144,5 +142,6 @@
       </p>
     </footer>
 
+    <script src="/static/js/cart-badge.js" defer></script>
   </body>
 </html>
