@@ -18,7 +18,9 @@
     />
   </head>
 
-  <body class="delete-page">
+  <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}" class="delete-page">
+    {% include '_header_nav.html' %}
+    
     <main class="delete-container">
       <section class="delete-card">
         <img

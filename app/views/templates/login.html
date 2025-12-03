@@ -23,68 +23,8 @@
     />
   </head>
 
-  <body>
-    <header id="main_header">
-      <div class="header-div">
-        <img
-          src="/static/uploads/img/home/icons-main/languages.png"
-          id="language-icon"
-          alt="Idioma"
-        />
-        <select name="language" id="language" aria-label="Selecionar idioma">
-          <option value="br">BR</option>
-          <option value="en">EN</option>
-          <option value="es">ES</option>
-        </select>
-      </div>
-
-      <div class="header-div">
-        <div
-          class="promo-rotator"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span id="promo-text" class="promo-text">
-            <b>Frete Grátis</b> para Compras Acima de R$ 299,00
-          </span>
-        </div>
-      </div>
-
-      <div class="header-div header-actions">
-          <a href="/faq" class="header-link">Ajuda</a>
-          <a href="/login" class="header-link">Entrar</a>
-          <a href="/cadastrar/" class="header-link">Criar conta</a>
-      </div>
-    </header>
-
-    <nav id="main_nav">
-      <div class="nav-div nav-left">
-        <a href="/" class="text_sections">Início</a>
-        <a href="/produtos" class="text_sections">Catálogo</a>
-        <a href="/carrinho" class="text_sections">Carrinho</a>
-      </div>
-
-      <div class="nav-div nav-center">
-        <a href="/">
-          <img src="/static/uploads/img/home/icons-main/letreiro-logo.png" id="logo" alt="Logo Fatal Lady"/>
-        </a>
-      </div>
-
-      <div class="nav-div nav-right">
-        <div class="cart-link-wrapper">
-          <a href="/carrinho">
-            <img src="/static/uploads/img/home/icons-main/kart.png" id="kart-icon" class="icons" alt="Carrinho"/>
-          </a>
-        </div>
-        <a href="/produtos">
-          <img src="/static/uploads/img/home/icons-main/shop.png" id="shop-icon" class="icons" alt="Loja"/>
-        </a>
-        <a href="/login">
-          <img src="/static/uploads/img/home/icons-main/user.png" id="user-icon" class="icons" alt="Login"/>
-        </a>
-      </div>
-  </nav>
+  <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}">
+    {% include '_header_nav.html' %}
 
     <main class="container" id="main" role="main">
       <div class="page-grid">

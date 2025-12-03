@@ -9,8 +9,9 @@
   <link rel="stylesheet" href="{{ url_for('static', path='css/pagamentos-style.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', path='css/layout-responsive.css') }}" />
 </head>
-<body>
-  {% include '_header_nav.html' %}
+
+  <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}">
+    {% include '_header_nav.html' %}
 
   <main class="pagamentos-container">
     <div class="pagamentos-wrapper">
