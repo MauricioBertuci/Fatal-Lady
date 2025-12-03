@@ -8,6 +8,7 @@ from app.models.usuario_model import UsuarioDB
 from app.models.carrinho_model import CarrinhoDB, ItemCarrinhoDB
 from app.models.produto_model import ProdutoDB
 from fastapi.templating import Jinja2Templates
+from app.controllers.produtos_controller import atribuir_imagem_para_produto
 
 
 templates = Jinja2Templates(directory="app/views/templates")
@@ -154,11 +155,11 @@ def carrinho_visualizar(request: Request, db: Session):
     if not payload:
         return RedirectResponse(url="/login", status_code=303)
 
-
     email = payload.get("sub")
     usuario = db.query(UsuarioDB).filter_by(email=email).first()
     if not usuario:
         return RedirectResponse(url="/login", status_code=303)
+
     carrinho = db.query(CarrinhoDB).filter_by(id_cliente=usuario.id_cliente).first()
 
     if not carrinho:
@@ -167,13 +168,25 @@ def carrinho_visualizar(request: Request, db: Session):
             {"request": request, "carrinho": [], "total": 0.0, "usuario": usuario}
         )
 
-    itens = db.query(ItemCarrinhoDB).filter_by(carrinho_id=carrinho.id).all()
-    produto = db.query(ItemCarrinhoDB.produto).filter_by(carrinho_id=carrinho.id).all()
+    itens = (
+        db.query(ItemCarrinhoDB)
+        .filter_by(carrinho_id=carrinho.id)
+        .all()
+    )
+
+    # aplica imagem para cada produto do item
+    for item in itens:
+        if item.produto:
+            atribuir_imagem_para_produto(item.produto)
 
     total = sum(item.quantidade * item.preco_unitario for item in itens)
 
     return templates.TemplateResponse(
         "carrinho.html",
-        {"request": request, "carrinho": itens, "total": total, "usuario": usuario, "produto":produto}
-
+        {
+            "request": request,
+            "carrinho": itens,
+            "total": total,
+            "usuario": usuario,
+        }
     )

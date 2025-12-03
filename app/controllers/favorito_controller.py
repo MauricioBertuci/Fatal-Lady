@@ -5,6 +5,8 @@ from app.models.favorito_model import FavoritoDB
 from app.models.produto_model import ProdutoDB
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
+from app.controllers.produtos_controller import atribuir_imagem_para_produto
+
 templates = Jinja2Templates(directory="app/views/templates")
 
 def listar_favoritos(id_usuario: int, db: Session):
@@ -13,8 +15,16 @@ def listar_favoritos(id_usuario: int, db: Session):
         .filter(FavoritoDB.id_usuario == id_usuario)
         .all()
     )
-    # retorna lista de ProdutoDB
-    return [f.produto for f in favoritos]
+
+    # pega a lista de ProdutoDB
+    produtos = [f.produto for f in favoritos]
+
+    # aplica a mesma regra de imagem do catálogo/produto
+    for produto in produtos:
+        atribuir_imagem_para_produto(produto)
+
+    return produtos
+
 
 def adicionar_favorito(id_usuario: int, id_produto: int, db: Session):
     produto = db.query(ProdutoDB).filter(ProdutoDB.id_produto == id_produto).first()
