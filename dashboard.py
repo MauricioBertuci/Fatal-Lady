@@ -206,7 +206,7 @@ with tab3:
         if df_pagamento.empty:
             st.info("Sem dados de pagamento.")
         else:
-            fig_pag = px.bar(df_pagamento, x="metodopagamento", y="total", text="total", title="Métodos de Pagamento")
+            fig_pag = px.bar(df_pagamento, x="metodo_pagamento", y="total", text="total", title="Métodos de Pagamento")
             st.plotly_chart(fig_pag, use_container_width=True)
 
 

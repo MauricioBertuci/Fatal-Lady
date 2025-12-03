@@ -17,7 +17,6 @@ from app.routes.meus_pedidos_router import router as meus_pedidos_router
 from app.routes.admin_router import router as admin_router
 from app.routes.categoria_router import router as categoria_router
 from app.routes.usuario_router import router as painel_usuario_router
-# from app.routes.dashboard_router import router as dashboard_router
 from app.routes.logout_router import router as logout_router
 from app.routes.favorito_router import router as favorito_router
 from app.routes.redefinir_senha_router import router as redefinir_senha_router
@@ -118,4 +117,3 @@ app.include_router(editar_user_router, tags=["Editar Usuário"])
 
 # --- Rotas administrativas ---
 app.include_router(admin_router, tags=["Administração"])
-# app.include_router(dashboard_routes, tags=["Dashboard"])
