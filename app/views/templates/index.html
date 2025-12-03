@@ -96,7 +96,7 @@
               <a href="/produto-get/{{ p.id_produto }}" class="featured-link">
                 <div class="featured-image">
                   <img
-                    src="/static/uploads/img/catalogo/products/default.png"
+                    src="{{ p.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
                     alt="{{ p.nome }}"
                   />
                   <div class="featured-overlay">

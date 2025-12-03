@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+from app.controllers.produtos_controller import atribuir_imagem_para_produto
 from fastapi.responses import RedirectResponse
 from app.auth import verificar_token
 from app.models import UsuarioDB, PedidoDB, ProdutoDB
@@ -5,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 templates =Jinja2Templates(directory="app/views/templates")
 # Página inicial
+
 def home_controller(request, db, templates):
     token = request.cookies.get("token")
     payload = verificar_token(token) if token else None
@@ -13,14 +16,26 @@ def home_controller(request, db, templates):
     if payload:
         usuario = db.query(UsuarioDB).filter(UsuarioDB.email == payload["sub"]).first()
 
-    produtos = db.query(ProdutoDB).all()
+    # carrega produtos com categoria para o algoritmo de imagens funcionar
+    produtos = (
+        db.query(ProdutoDB)
+        .options(joinedload(ProdutoDB.categoria))
+        .order_by(ProdutoDB.id_produto)
+        .all()
+    )
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "usuario": usuario,
-        "produtos": produtos
-    })
+    # aplica a mesma regra de imagem usada no catálogo/detalhe
+    for produto in produtos:
+        atribuir_imagem_para_produto(produto)
 
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "usuario": usuario,
+            "produtos": produtos,
+        },
+    )
 
 # Painel do usuário
 def painel_controller(request, db, templates):

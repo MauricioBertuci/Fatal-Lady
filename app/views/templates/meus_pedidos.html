@@ -94,7 +94,7 @@
                 <div class="pedido-item">
                   <div class="item-image">
                     <img
-                      src="/static/uploads/img/catalogo/products/default.png"
+                      src="{{ item.produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
                       alt="{{ item.produto.nome }}"
                     />
                   </div>
