@@ -91,7 +91,7 @@
             <p>Descubra as peças mais desejadas da temporada</p>
           </div>
           <div class="featured-grid">
-            {% for p in produtos[-4:] %}
+            {% for p in produtos[:4] %}
             <article class="featured-card">
               <a href="/produto-get/{{ p.id_produto }}" class="featured-link">
                 <div class="featured-image">

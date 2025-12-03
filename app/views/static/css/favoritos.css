@@ -2,11 +2,16 @@
 
 .favorites-wrapper {
   padding: 3.5rem 0;
-  background: white;
+  background: var(--background); /* em vez de branco, segue o resto do site */
 }
 
-.favorites-header h2 {
-  font-size: 1.6rem;
+/* header da página */
+.favorites-header {
+  margin-bottom: 1.8rem;
+}
+
+.favorites-header h1 {
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--dark-gray);
 }
@@ -16,8 +21,9 @@
   color: #666;
 }
 
+/* bloco vazio */
 .favorites-empty {
-  background: var(--background);
+  background: #fff;
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
@@ -36,6 +42,7 @@
   margin-bottom: 1.2rem;
 }
 
+/* meta / topo da lista */
 .favorites-meta {
   display: flex;
   justify-content: space-between;
@@ -56,10 +63,12 @@
   text-decoration: underline;
 }
 
+/* cards de produto, aproveitando o visual de featured-card */
 .favorite-card {
   position: relative;
 }
 
+/* coração no canto do card */
 .favorite-badge {
   position: absolute;
   top: 10px;
@@ -87,6 +96,7 @@
   text-decoration: line-through;
 }
 
+/* ações embaixo do card */
 .favorite-actions {
   display: flex;
   justify-content: space-between;
