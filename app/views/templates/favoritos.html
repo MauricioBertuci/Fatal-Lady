@@ -26,6 +26,7 @@
       href="{{ url_for('static', path='css/cart-badge.css') }}"
     />
   </head>
+
   <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}">
     {% include "_header_nav.html" %}
 
@@ -38,74 +39,91 @@
           </header>
 
           {% if not favoritos or favoritos|length == 0 %}
-            <div class="favorites-empty">
-              <h3>Você ainda não tem favoritos.</h3>
-              <p>
-                Explore o catálogo e clique no coração para salvar seus produtos
-                preferidos.
-              </p>
-              <a href="/produtos" class="btn-outline">
-                Ver catálogo
-              </a>
-            </div>
+          <div class="favorites-empty">
+            <img
+              src="/static/uploads/img/carrinho/kart_alert.png"
+              alt="Nenhum favorito"
+            />
+            <h3>Você ainda não tem favoritos.</h3>
+            <p>
+              Explore o catálogo e clique no coração para salvar seus produtos
+              preferidos.
+            </p>
+            <a href="/produtos" class="btn-outline">
+              Ver catálogo
+            </a>
+          </div>
           {% else %}
-            <div class="favorites-meta">
-              <span>{{ favoritos|length }} produto(s) salvo(s)</span>
-              <a href="/produtos" class="favorites-link">
-                Continuar comprando
-              </a>
-            </div>
+          <div class="favorites-meta">
+            <span>{{ favoritos|length }} produto(s) salvo(s)</span>
+            <a href="/produtos" class="favorites-link">
+              Continuar comprando
+            </a>
+          </div>
 
-            <div class="featured-grid">
-              {% for produto in favoritos %}
-                <article class="featured-card favorite-card">
-                  <div class="featured-image">
-                    <img
-                      src="{{ produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
-                      alt="{{ produto.nome }}"
-                      loading="lazy"
-                    />
-                    <div class="favorite-badge">
-                      &#10084;
-                    </div>
-                  </div>
+          <div class="favorites-grid">
+            {% for produto in favoritos %}
+            <article class="favorite-card">
+              <div class="favorite-media">
+                <a
+                  href="/produto-get/{{ produto.id_produto }}"
+                  class="favorite-media-link"
+                >
+                  <img
+                    src="{{ produto.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
+                    alt="{{ produto.nome }}"
+                    loading="lazy"
+                  />
+                </a>
 
-                  <div class="featured-info">
-                    <span class="featured-category">
-                      {{ produto.categoria_nome or 'Coleção Fatal Lady' }}
+                <span class="favorite-badge">&#10084;</span>
+              </div>
+
+              <div class="favorite-body">
+                <span class="favorite-category">
+                  {{ produto.categoria_nome or 'Coleção Fatal Lady' }}
+                </span>
+
+                <h3 class="favorite-name">
+                  {{ produto.nome }}
+                </h3>
+
+                <div class="favorite-meta-row">
+                  <div class="favorite-price">
+                    R$
+                    <span class="favorite-price-value">
+                      {{ "%.2f"|format(produto.preco)|replace('.', ',') }}
                     </span>
-
-                    <h3 class="featured-name">
-                      {{ produto.nome }}
-                    </h3>
-
-                    <div class="favorite-price-row">
-                      <span class="featured-price">
-                        R$
-                        {{ "%.2f"|format(produto.preco)|replace('.', ',') }}
-                      </span>
-                    </div>
                   </div>
+                </div>
 
-                  <div class="favorite-actions">
-                    <form
-                      action="{{ url_for('delete_favorite', id_produto=produto.id_produto) }}"
-                      method="post"
+                <div class="favorite-actions">
+                  <form
+                    action="{{ url_for('delete_favorite', id_produto=produto.id_produto) }}"
+                    method="post"
+                  >
+                    <button type="submit" class="favorite-remove-btn">
+                      Remover dos favoritos
+                    </button>
+                  </form>
+
+                  <form
+                    action="/produto-get/{{ produto.id_produto }}"
+                    method="get"
+                  >
+                    <button
+                      type="submit"
+                      class="favorite-cart-btn"
+                      aria-label="Ver {{ produto.nome }}"
                     >
-                      <button type="submit" class="favorite-remove-btn">
-                        Remover dos favoritos
-                      </button>
-                    </form>
-
-                    <form action="/produto-get/{{ produto.id_produto }}" method="get">
-                      <button type="submit" class="btn-outline favorite-cart-btn">
-                        Ver produto
-                      </button>
-                    </form>
-                  </div>
-                </article>
-              {% endfor %}
-            </div>
+                      Ver produto
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+          </div>
           {% endif %}
         </div>
       </section>

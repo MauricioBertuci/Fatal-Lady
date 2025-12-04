@@ -1,7 +1,3 @@
-<!-- EDITADO POR: Gemini
-     DATA: 2025-10-31 19:12:29 UTC
-     RESUMO: Padronização header/nav/footer com index; correções semânticas e aria; limpeza de scripts redundantes.
--->
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -260,7 +256,9 @@
               <div class="category-header">
                 <h3 class="category-title">
                   {% if group.list and group.list[0].categoria_nome is defined %} 
-                    {{ group.list[0].categoria_nome }} {% else %} {{group.grouper }} 
+                    {{ group.list[0].categoria_nome }} 
+                  {% else %} 
+                    {{ group.grouper }} 
                   {% endif %}
                 </h3>
 
@@ -283,7 +281,7 @@
               <div class="category-products" role="list">
                 {% for p in group.list %}
                 <article
-                  class="product-card"
+                  class="product-card catalog-card"
                   data-category="{{ p.categoria.nome }}"
                   data-name="{{ p.nome }}"
                   data-id="p{{ p.id_produto }}"
@@ -292,41 +290,70 @@
                   data-size="{{ p.tamanhos }}"
                   role="listitem"
                 >
-                  <div class="product-badge">
-                    {{ (p.categoria.nome)|upper }}
-                  </div>
-
-                  <a
-                    href="/produto-get/{{ p.id_produto }}"
-                    class="product-media"
-                  >
-                    <img
-                      src="{{ p.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
-                      alt="{{ p.nome }}"
-                    />
-                  </a>
-
-                  <div class="product-body">
-                    <h3 class="product-name">{{ p.nome }}</h3>
-                    <div class="product-price">
-                      R$
-                      <span class="price-value"
-                        >{{ ('%.2f'|format(p.preco)).replace('.', ',') }}</span
-                      >
-                    </div>
-                  </div>
-
-                  <div class="product-actions">
-                    <a href="/produto-get/{{ p.id_produto }}">
-                      <button
-                        class="add-to-cart"
-                        type="button"
-                        aria-label="Ver {{ p.nome }}"
-                        data-id="{{ p.id_produto }}"
-                      >
-                        Ver mais
-                      </button>
+                  <div class="catalog-card-media">
+                    <a
+                      href="/produto-get/{{ p.id_produto }}"
+                      class="product-media-link"
+                    >
+                      <img
+                        src="{{ p.caminhoimagem or '/static/uploads/img/catalogo/products/default.png' }}"
+                        alt="{{ p.nome }}"
+                        loading="lazy"
+                      />
                     </a>
+
+                    <div class="product-badge">
+                      {{ (p.categoria.nome)|upper }}
+                    </div>
+
+                    {# BOTÃO DE FAVORITO (AJUSTE A ROTA SE O NOME FOR OUTRO) #}
+                    <form
+                      action="{{ url_for('add_favorite', id_produto=p.id_produto) }}"
+                      method="post"
+                      class="favorite-toggle-form"
+                    >
+                      <button
+                        type="submit"
+                        class="favorite-toggle-btn {% if p.is_favorito is defined and p.is_favorito %}is-favorite{% endif %}"
+                        aria-label="Favoritar {{ p.nome }}"
+                      >
+                        <span class="favorite-icon">&#10084;</span>
+                      </button>
+                    </form>
+                  </div>
+
+                  <div class="product-body catalog-card-body">
+                    <h3 class="product-name">{{ p.nome }}</h3>
+
+                    <div class="catalog-card-meta">
+                      <div class="catalog-card-rating">
+                        {% if p.nota_media is defined and p.nota_media %}
+                          <span class="rating-stars">★ {{ "%.1f"|format(p.nota_media) }}</span>
+                        {% else %}
+                          <span class="rating-stars rating-empty">Novo</span>
+                        {% endif %}
+                      </div>
+
+                      <div class="product-price">
+                        R$
+                        <span class="price-value">
+                          {{ ('%.2f'|format(p.preco)).replace('.', ',') }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="product-actions catalog-card-actions">
+                      <a href="/produto-get/{{ p.id_produto }}">
+                        <button
+                          class="add-to-cart"
+                          type="button"
+                          aria-label="Ver {{ p.nome }}"
+                          data-id="{{ p.id_produto }}"
+                        >
+                          Ver mais
+                        </button>
+                      </a>
+                    </div>
                   </div>
                 </article>
                 {% endfor %}
@@ -384,5 +411,6 @@
     <script src="/static/js/catalogo_filter.js" defer></script>
     <script src="/static/js/promo-rotator.js" defer></script>
     <script src="/static/js/cart-badge.js" defer></script>
+    <script src="/static/js/catalogo-favoritos.js" defer></script>
   </body>
 </html>
