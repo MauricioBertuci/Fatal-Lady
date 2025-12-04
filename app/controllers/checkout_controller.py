@@ -143,7 +143,7 @@ def finalizar(request: Request, db: Session):
 
           <tr>
             <td align="center" style="padding:20px;">
-              <a href="http://127.0.0.1:8000/meus-pedidos" style="display:inline-block; background-color:#d00000; color:#fff; padding:14px 28px; border-radius:4px; text-decoration:none; font-weight:bold;">
+              <a href="{request.base_url}/me/meus-pedidos" style="display:inline-block; background-color:#d00000; color:#fff; padding:14px 28px; border-radius:4px; text-decoration:none; font-weight:bold;">
                 Acompanhar Pedido
               </a>
             </td>

@@ -85,7 +85,7 @@ def cadastro_controller(request: Request,
             <h2>Olá, {nome}! 👋</h2>
             <p>Seja muito bem-vinda à <b>Fatal Lady</b> — onde a elegância encontra a atitude.</p>
             <p>Explore nossa coleção de saltos finos e sandálias exclusivas!</p>
-            <a href="http://127.0.0.1:8000/login" style="display:inline-block; margin-top:20px; background-color:#d00000; color:#fff; padding:14px 28px; border-radius:4px; text-decoration:none; font-weight:bold;">
+            <a href="{request.base_url}login" style="display:inline-block; margin-top:20px; background-color:#d00000; color:#fff; padding:14px 28px; border-radius:4px; text-decoration:none; font-weight:bold;">
               Descubra Agora
             </a>
           </td>

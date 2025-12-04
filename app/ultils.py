@@ -4,7 +4,6 @@ import os
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 
-
 load_dotenv()
 EMAIL_REMITENTE = os.getenv("EMAIL_REMITENTE")
 EMAIL_SENHA = os.getenv("EMAIL_SENHA")
@@ -60,6 +59,7 @@ from datetime import datetime, timedelta
 from app.database import SessionLocal
 from app.models.usuario_model import UsuarioDB
 
+
 def verificar_inativos():
     db = SessionLocal()
     limite = datetime.utcnow() - timedelta(days=30)
@@ -93,7 +93,7 @@ def verificar_inativos():
             A Fatal Lady está cheia de <b>novidades incríveis</b> que você vai amar — incluindo novos lançamentos, promoções exclusivas e coleções que acabaram de chegar!
           </p>
 
-          <a href="http://127.0.0.1:8000"
+          <a href="https://fatallady.chilecentral.cloudapp.azure.com/"
             style="display:inline-block;
                    margin-top:25px;
                    background-color:#d00000;
