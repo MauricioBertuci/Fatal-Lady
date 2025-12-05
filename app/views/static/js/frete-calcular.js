@@ -33,13 +33,12 @@ if (calculateShippingButton) {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `/frete/calcular/?cep_destino=${(cep)}`,
-        {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        }
-      );
+      const response = await fetch(`/frete/calcular/?cep_destino=${cep}`, {
+  method: "GET",
+  credentials: "include",   // <- ESSENCIAL pra enviar o cookie "token"
+});
+
+    
 
       if (!response.ok) throw new Error("Erro ao consultar o frete.");
 
