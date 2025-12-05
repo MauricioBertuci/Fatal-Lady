@@ -138,8 +138,8 @@ async def google_callback(
         {
             "sub": usuario.email,
             # ajuste as chaves conforme seu criar_token espera
-            # "id": usuario.id_cliente,
-            # "is_admin": usuario.is_admin,
+            "id": usuario.id_cliente,
+            "is_admin": usuario.is_admin,
         }
     )
 
@@ -150,7 +150,7 @@ async def google_callback(
         value=token_jwt,
         httponly=True,
         samesite="lax",
-        secure=False,  # em produção/https -> True
+        secure=True,  # em produção/https -> True
         max_age=60 * 60 * 24 * 7,
     )
     return response
