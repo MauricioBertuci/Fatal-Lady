@@ -26,7 +26,7 @@ def controller_esqueci_senha_login(request: Request, db: Session, email: str):
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-    link = f"http://localhost:8000/redefinir-senha?token={token}"
+    link = f"{request.base_url}redefinir-senha?token={token}"
 
     enviar_email(
         usuario.email,

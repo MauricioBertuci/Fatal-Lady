@@ -4,7 +4,6 @@ import os
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 
-
 load_dotenv()
 EMAIL_REMITENTE = os.getenv("EMAIL_REMITENTE")
 EMAIL_SENHA = os.getenv("EMAIL_SENHA")
@@ -60,6 +59,7 @@ from datetime import datetime, timedelta
 from app.database import SessionLocal
 from app.models.usuario_model import UsuarioDB
 
+
 def verificar_inativos():
     db = SessionLocal()
     limite = datetime.utcnow() - timedelta(days=30)
@@ -93,7 +93,7 @@ def verificar_inativos():
             A Fatal Lady está cheia de <b>novidades incríveis</b> que você vai amar — incluindo novos lançamentos, promoções exclusivas e coleções que acabaram de chegar!
           </p>
 
-          <a href="http://127.0.0.1:8000"
+          <a href="https://fatallady.chilecentral.cloudapp.azure.com/"
             style="display:inline-block;
                    margin-top:25px;
                    background-color:#d00000;
@@ -125,3 +125,55 @@ scheduler = BackgroundScheduler()
 # scheduler.add_job(verificar_inativos, "interval", seconds=10) 
 scheduler.add_job(verificar_inativos, "cron", hour=0) # executa todo dia às 00:00
 scheduler.start()
+
+
+
+
+
+
+#APRESENTAÇÂO
+
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+
+from app.models.lembrancinha_model import LembrancinhaDB
+
+LIMITE_LEMBRANCINHAS = 50
+
+
+def tentar_registrar_lembrancinha(id_cliente: int, pedido_id: int, db: Session) -> bool:
+    """
+    Retorna True se o cliente ganhou lembrancinha.
+    Retorna False se:
+      - já bateu o limite de 50
+      - ou esse cliente já ganhou antes.
+    """
+
+    # Verifica se cliente já tem uma lembrancinha registrada
+    ja_tem = (
+        db.query(LembrancinhaDB)
+        .filter(LembrancinhaDB.id_cliente == id_cliente)
+        .first()
+    )
+    if ja_tem:
+        return False
+
+    # Quantas já foram distribuídas
+    total = db.query(func.count(LembrancinhaDB.id)).scalar() or 0
+    if total >= LIMITE_LEMBRANCINHAS:
+        return False
+
+    lembr = LembrancinhaDB(
+        id_cliente=id_cliente,
+        pedido_id=pedido_id,
+    )
+    db.add(lembr)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        return False
+
+    return True

@@ -1,206 +1,156 @@
-# routes/login_router.py
-import json
 from fastapi import APIRouter, Request, Form, Depends
-from datetime import datetime
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from starlette.requests import Request as StarletteRequest
+
 from app.database import get_db
 from app.controllers.login_controller import login_controller
-from fastapi.responses import RedirectResponse, HTMLResponse
-from fastapi import Request
-
-# login com facebook e google =========================
-from app.oauth_config import oauth
-from authlib.integrations.starlette_client import OAuth
-from starlette.requests import Request as LoginStarlette
-import os
-
-from app.auth import criar_token
 from app.models.usuario_model import UsuarioDB
+from app.auth import criar_token
+from app.oauth_config import oauth
+from app.ultils import enviar_email
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/views/templates")
 
-@router.get("/login",response_class=HTMLResponse)
-def page(request:Request):
-    return templates.TemplateResponse("login.html",{
-        "request":request
-    })
+
+# login
+
+@router.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
-def logar(request: Request,
-               email: str = Form(...),
-               senha: str = Form(...),
-               db: Session = Depends(get_db)):
+def login_post(
+    request: Request,
+    email: str = Form(...),
+    senha: str = Form(...),
+    db: Session = Depends(get_db),
+):
     return login_controller(request, email, senha, db)
 
 
+#  LOGIN COM GOOGLE 
+@router.get("/login/google")
+async def login_google(request: Request):
+    redirect_uri = request.url_for("google_callback")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
-#############################################################
-#Verificar
-# rota para iniciar login Google
-# @router.get("/login/google")
-# async def login_google(request: LoginStarlette):
-#     redirect_uri = request.url_for("auth_google_callback")
-#     return await oauth.google.authorize_redirect(request, redirect_uri)
-
-# # rota de retorno Google
-# @router.get("/auth/google/callback", name="auth_google_callback")
-# async def auth_google_callback(request: LoginStarlette, db: Session = Depends(get_db)):
-#     # Aqui valida o state e pega o token
-#     token = await oauth.google.authorize_access_token(request)
-    
-#     # Pega informações do usuário (Google ID token)
-#     user = await oauth.google.parse_id_token(request, token)
-    
-#     email = user.get("email")
-#     nome = user.get("name", "")
-    
-#     # Cria ou busca usuário no DB
-#     usuario = db.query(UsuarioDB).filter_by(email=email).first()
-#     if not usuario:
-#         usuario = UsuarioDB(email=email, nome=nome, senha="")
-#         db.add(usuario)
-#         db.commit()
-#         db.refresh(usuario)
-    
-#     # Cria JWT e seta cookie
-#     jwt = criar_token({"sub": usuario.email})
-#     response = RedirectResponse(url="/")
-#     response.set_cookie(key="token", value=jwt, httponly=True)
-#     return response
-
-# =================
-# FACEBOOK ---- NAO TA UNCIONANDO!! 😭
-# =================
-
-oauth = OAuth()
-oauth.register(
-    name="facebook",
-    client_id=os.getenv("FACEBOOK_CLIENT_ID"),
-    client_secret=os.getenv("FACEBOOK_CLIENT_SECRET"),
-    access_token_url="https://graph.facebook.com/v12.0/oauth/access_token",
-    access_token_params=None,
-    authorize_url="https://www.facebook.com/v12.0/dialog/oauth",
-    authorize_params=None,
-    api_base_url="https://graph.facebook.com/v12.0/",
-    client_kwargs={"scope": "email public_profile"},
-)
-
-# redireciona para facebook
-@router.get("/auth/facebook") # Seu HTML precisa ter <a href="/auth/facebook">
-async def auth_facebook(request: Request):
-    # Usando request.url_for para ser mais seguro e automático
-    redirect_uri = request.url_for('auth_facebook_callback')
-    return await oauth.facebook.authorize_redirect(request, str(redirect_uri))
-
-# callback — retorna do facebook
-@router.get("/auth/facebook/callback", name="auth_facebook_callback")
-async def auth_facebook_callback(request: Request, db: Session = Depends(get_db)): # <-- PROBLEMA 3 CORRIGIDO
-    
+@router.get("/login/google/callback", name="google_callback")
+async def google_callback(
+    request: Request,
+    db: Session = Depends(get_db),
+):
     try:
-        token = await oauth.facebook.authorize_access_token(request)
-    except Exception as e:
-        # <-- PROBLEMA 1 CORRIGIDO (access_denied)
-        # Se o usuário clicar em "Cancelar", o erro cai aqui
-        print(f"Usuário cancelou ou deu erro: {e}")
-        return RedirectResponse(url="/login") # Manda de volta pro login
+        token = await oauth.google.authorize_access_token(request)
+    except Exception:
+        # se vier direto sem ?code=..., volta pro login
+        return RedirectResponse(url="/login", status_code=303)
 
-    # Se o 'try' funcionou, o usuário logou.
-    user_info = await oauth.facebook.get("me?fields=id,name,email", token=token)
-    user_data = user_info.json()
+    userinfo = token.get("userinfo")
+    if not userinfo:
+        userinfo = await oauth.google.parse_id_token(request, token)
 
-    email = user_data.get("email")
-    nome = user_data.get("name")
+    email = userinfo.get("email")
+    nome = userinfo.get("name") or (email.split("@")[0] if email else "")
 
     if not email:
-        # Se o Facebook não retornar o e-mail
-        return RedirectResponse(url="/login?error=email_nao_fornecido")
+        return RedirectResponse(url="/login", status_code=303)
 
-    # salvar ou buscar o usuário no banco (usando o 'db' injetado)
+    # PROCURA USUÁRIO EXISTENTE
     usuario = db.query(UsuarioDB).filter(UsuarioDB.email == email).first()
 
+    # SE NÃO EXISTE, CRIA UM NOVO A PARTIR DO GOOGLE
     if not usuario:
-        # Use "" para a senha, já que o usuário não tem uma
-        novo = UsuarioDB(nome=nome, email=email, senha="") 
-        db.add(novo)
+        usuario = UsuarioDB(
+            nome=nome,
+            email=email,
+            # IMPORTANTE: aqui você PRECISA respeitar os campos obrigatórios do seu model.
+            # Exemplos (AJUSTE para bater com seu UsuarioDB):
+
+            # se 'senha' é NOT NULL:
+            # - gere uma senha aleatória ou marque como "login_google"
+            senha="login_google",  # ou um hash, se você sempre usa hash
+
+            # se cpf / telefone / data_nascimento forem nullable=True, pode deixar None:
+            # cpf=None,
+            # telefone=None,
+            # data_nascimento=None,
+
+            # se tiver campos como:
+            # is_admin=False,
+            # ativo=True,
+            # provedor="google",
+        )
+
+        db.add(usuario)
         db.commit()
-        db.refresh(novo)
-        usuario = novo
-    
-    # (Não precisa de db.close(), o Depends(get_db) cuida disso)
+        db.refresh(usuario)
 
-    # cookie/token de sessão
-    jwt = criar_token({
-        "sub": usuario.email,
-        "id": usuario.id_cliente,
-        "is_admin": usuario.is_admin,
-    }) 
-    response = RedirectResponse(url="/me/painel", status_code=303)
-    response.set_cookie(key="token", value=jwt, httponly=True) # Salva o token JWT
+            # Envia e-mail de boas-vindas
+        logo_url = f"{request.base_url}/static/uploads/img/catalogo/icons-main/letreiro-logo.png"
+        login_url = f"{request.base_url}/login"
 
+        corpo_html = f"""
+        <html>
+            <body style="margin:0; padding:0; font-family:'Poppins',Arial,sans-serif; background-color:#fff;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td align="center" style="padding:40px 0;">
+                        <img src="{logo_url}" width="80" alt="Fatal Lady">
+                        <h1 style="color:#000; font-size:28px; margin-top:10px;">
+                            FATAL <span style="color:#d00000;">LADY</span>
+                        </h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding:20px 40px;">
+                        <h2>Olá, {nome} 👋</h2>
+                        <p>Seja muito bem-vinda à <b>Fatal Lady</b> — onde a elegância encontra a atitude.</p>
+                        <p>Explore nossa coleção de saltos finos e sandálias exclusivas!</p>
+                        <a href="{login_url}" style="display:inline-block; margin-top:20px; background-color:#d00000; color:#fff; padding:14px 28px; border-radius:4px; text-decoration:none; font-weight:bold;">
+                            Descubra Agora
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding:40px 0; background-color:#000; color:#fff; font-size:13px;">
+                        <p>Frete grátis em compras acima de R$299</p>
+                        <p>© 2025 Fatal Lady. Todos os direitos reservados.</p>
+                    </td>
+                </tr>
+            </table>
+            </body>
+        </html>
+        """
+
+        enviar_email(
+            destinatario=email,
+            assunto="Bem-vinda à Fatal Lady",
+            corpo=corpo_html,
+        )   
+    # A PARTIR DAQUI, JÁ TEMOS 'usuario' GARANTIDO
+
+    # MESMA LÓGICA DO LOGIN NORMAL
+    token_jwt = criar_token(
+        {
+            "sub": usuario.email,
+            # ajuste as chaves conforme seu criar_token espera
+            # "id": usuario.id_cliente,
+            # "is_admin": usuario.is_admin,
+        }
+    )
+
+    destino = "/admin" if getattr(usuario, "is_admin", False) else "/"
+    response = RedirectResponse(url=destino, status_code=303)
+    response.set_cookie(
+        key="token",
+        value=token_jwt,
+        httponly=True,
+        samesite="lax",
+        secure=False,  # em produção/https -> True
+        max_age=60 * 60 * 24 * 7,
+    )
     return response
-
-
-
-
-# @router.get("/login/facebook")
-# async def login_facebook(request: Request):
-#     print("=" * 50)
-#     print("INICIANDO LOGIN FACEBOOK")
-#     print(f"Cookies recebidos: {request.cookies}")
-#     print(f"Session ANTES do redirect: {dict(request.session)}") # Para saber se está sendo recebido e redirecionado
-    
-#     redirect_uri = request.url_for('auth/facebook/callback')
-#     response = await oauth.facebook.authorize_redirect(request, redirect_uri)
-    
-#     print(f"Session DEPOIS do redirect: {dict(request.session)}")
-#     print(f"Cookies na resposta: {response.headers.get('set-cookie')}")
-#     print("=" * 50)
-    
-#     return response
-
-# @router.get("/auth/facebook/callback")
-# async def auth_facebook_callback(request: Request, db: Session = Depends(get_db)):
-#     print("=" * 50)
-#     print("CALLBACK FACEBOOK RECEBIDO")
-#     print(f"Query params: {request.query_params}")
-#     print(f"Session: {request.session}")
-#     print("=" * 50)
-    
-#     try:
-#         token = await oauth.facebook.authorize_access_token(request)
-#     except Exception as e:
-#         print("!!! ERRO NO CALLBACK DO FACEBOOK !!!")
-#         print(f"Tipo do erro: {type(e)}")
-#         print(f"Mensagem: {e}")
-#         return RedirectResponse(url="/login?error=facebook-cancelado")
-    
-#     resp = await oauth.facebook.get('me?fields=id,name,email')
-#     user_info = resp.json()
-    
-#     email = user_info.get("email")
-#     nome = user_info.get("name")
-    
-#     # Se o Facebook não retornar um e-mail (raro, mas pode acontecer)
-#     if not email:
-#         return RedirectResponse(url="/login?error=facebook-no-email")
-#     # ---------------------------------
-
-#     # Cria ou busca usuário no DB 
-#     usuario = db.query(UsuarioDB).filter_by(email=email).first()
-    
-#     if not usuario:
-#         usuario = UsuarioDB(email=email, nome=nome, senha="") 
-#         db.add(usuario)
-#         db.commit()
-#         db.refresh(usuario) # Garante que o ID do usuário está carregado
-
-#     # Cria JWT e seta cookie (Seu código aqui estava bom)
-#     jwt = criar_token({"sub": usuario.email})
-    
-#     response = RedirectResponse(url="/")
-#     response.set_cookie(key="token", value=jwt, httponly=True)
-    
-#     return response
