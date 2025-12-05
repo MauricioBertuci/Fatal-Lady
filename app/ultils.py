@@ -125,3 +125,55 @@ scheduler = BackgroundScheduler()
 # scheduler.add_job(verificar_inativos, "interval", seconds=10) 
 scheduler.add_job(verificar_inativos, "cron", hour=0) # executa todo dia às 00:00
 scheduler.start()
+
+
+
+
+
+
+#APRESENTAÇÂO
+
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+
+from app.models.lembrancinha_model import LembrancinhaDB
+
+LIMITE_LEMBRANCINHAS = 50
+
+
+def tentar_registrar_lembrancinha(id_cliente: int, pedido_id: int, db: Session) -> bool:
+    """
+    Retorna True se o cliente ganhou lembrancinha.
+    Retorna False se:
+      - já bateu o limite de 50
+      - ou esse cliente já ganhou antes.
+    """
+
+    # Verifica se cliente já tem uma lembrancinha registrada
+    ja_tem = (
+        db.query(LembrancinhaDB)
+        .filter(LembrancinhaDB.id_cliente == id_cliente)
+        .first()
+    )
+    if ja_tem:
+        return False
+
+    # Quantas já foram distribuídas
+    total = db.query(func.count(LembrancinhaDB.id)).scalar() or 0
+    if total >= LIMITE_LEMBRANCINHAS:
+        return False
+
+    lembr = LembrancinhaDB(
+        id_cliente=id_cliente,
+        pedido_id=pedido_id,
+    )
+    db.add(lembr)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        return False
+
+    return True
