@@ -21,6 +21,10 @@
       rel="stylesheet"
       href="{{ url_for('static', path='css/auth-simples.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', path='css/home-style.css') }}"
+    />
   </head>
 
   <body data-is-authenticated="{% if usuario %}true{% else %}false{% endif %}">
@@ -91,32 +95,26 @@
       </div>
     </main>
 
-    <footer role="contentinfo">
-      <div class="footer-links">
+    <footer class="footer-link" role="contentinfo">
+      <div class="footer-links-2">
         <div>
-          <h4>Minha Conta</h4>
+          <h4>MINHA CONTA</h4>
           <a href="/me/dados">Meus Dados</a>
           <a href="/me/meus-pedidos">Meus Pedidos</a>
           <a href="/me/painel">Cashback</a>
           <a href="/login">Login</a>
         </div>
-
         <div>
-          <h4>Suporte e Políticas</h4>
+          <h4>SUPORTE E POLÍTICAS</h4>
           <a href="/politicas/trocas/devolucoes">Trocas e Devoluções</a>
           <a href="/faq">Dúvidas Frequentes</a>
           <a href="/faleconosco">Fale Conosco</a>
           <a href="/privacy">Política de Privacidade</a>
         </div>
         <div>
-          <h4>Formas de Pagamento</h4>
-          <img
-            src="/static/uploads/img/catalogo/footer/payment.png"
-            alt="Formas de Pagamento"
-          />
+          <h4>FORMAS DE PAGAMENTO</h4>
         </div>
       </div>
-      <hr />
       <p class="copy">Coffe and Code | © 2025 Todos os direitos reservados</p>
     </footer> 
 

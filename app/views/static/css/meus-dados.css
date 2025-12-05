@@ -290,6 +290,7 @@
   background: #c82333;
 }
 
+/* --------- BREAKPOINT TABLET / NOTEBOOK PEQUENO --------- */
 @media (max-width: 968px) {
   .dados-content {
     grid-template-columns: 1fr;
@@ -626,5 +627,96 @@
 
   .status-toast {
     width: min(95vw, 400px);
+  }
+}
+
+/* --------- REFINO RESPONSIVO ADICIONAL --------- */
+/* tablet vertical / mobile grande */
+@media (max-width: 768px) {
+  .dados-container {
+    width: 100%;
+    margin: 1.5rem auto;
+    padding: 1.5rem 0 2.5rem;
+  }
+
+  .dados-header {
+    margin-bottom: 1.8rem;
+  }
+
+  .dados-header h1 {
+    font-size: 2rem;
+  }
+
+  .dados-header p {
+    font-size: 0.98rem;
+  }
+
+  .dados-sidebar {
+    padding: 1.25rem;
+  }
+
+  .dados-card {
+    padding: 1.6rem;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .form-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+/* mobile pequeno */
+@media (max-width: 480px) {
+  .dados-container {
+    margin: 1.25rem auto;
+  }
+
+  .dados-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .dados-card {
+    padding: 1.3rem 1.1rem;
+    border-radius: 0.85rem;
+  }
+
+  .security-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-modal {
+    padding: 1.6rem 1.4rem;
+  }
+
+  .delete-modal-title {
+    font-size: 1.15rem;
+  }
+
+  .delete-modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .delete-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+    text-align: center;
   }
 }

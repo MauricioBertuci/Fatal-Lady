@@ -354,17 +354,6 @@ footer hr {
 
 /* --- Responsive (media queries) --- */
 @media (max-width: 968px) {
-  #main_header {
-    padding: 10px 20px;
-    flex-direction: column;
-    gap: 10px;
-  }
-  nav {
-    padding: 15px 20px;
-    flex-direction: column;
-    gap: 20px;
-    top: 3.2rem;
-  }
   .cart-content {
     grid-template-columns: 1fr;
   }
