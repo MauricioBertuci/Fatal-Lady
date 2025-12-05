@@ -2148,3 +2148,128 @@ footer hr {
     width: 260px;
   }
 }
+
+/* ============================
+   AJUSTE RESPONSIVO – FILTROS
+   CATÁLOGO (MOBILE)
+   ============================ */
+@media (max-width: 600px) {
+  .products-header {
+    padding: 18px 14px;
+  }
+
+  .products-header-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* título centralizado */
+  .catalog-title {
+    text-align: center;
+    margin: 0 0 12px 0;
+  }
+
+  /* linha de categorias: um embaixo do outro, centralizado */
+  .filters-top-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .cat-filters {
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  /* linha do meio: buscar + controles empilhados */
+  .filters-middle-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-left {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .search-box input[type="search"] {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .right-controls {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .price-filter,
+  .color-filter,
+  .filter-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* slider ocupa toda largura do card e não vaza */
+  .price-ranges {
+    width: 100%;
+  }
+
+  /* linha de tamanhos também mais “mobile friendly” */
+  .filters-size-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 12px;
+  }
+
+  .size-filter,
+  .size-filters {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================
+   CORREÇÃO ORDEM / LAYOUT FILTROS - MOBILE
+   ========================================= */
+@media (max-width: 640px) {
+  /* garante empilhamento limpo */
+  .products-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* 1º: categorias */
+  .filters-top-row {
+    order: 1;
+  }
+
+  /* 2º: busca + preço + cores + limpar */
+  .filters-middle-row {
+    order: 2;
+  }
+
+  /* 3º: tamanhos (embaixo, separado) */
+  .filters-size-row {
+    order: 3;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .size-filter,
+  .size-filters {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}

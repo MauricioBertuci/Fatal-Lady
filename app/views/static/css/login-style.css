@@ -473,22 +473,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  .header-div p {
-    position: static;
-    transform: none;
-    font-size: 0.8rem;
-    padding: 0 0.5rem;
-  }
-
-  header {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 0.8rem;
-  }
-
-  #logo {
-    width: 12rem;
-  }
 
   .hero h1 {
     font-size: 2rem;
