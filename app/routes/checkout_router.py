@@ -7,7 +7,6 @@ from fastapi.templating import Jinja2Templates
 
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/views/templates")
 
 @router.post("/checkout")
 def checkout(request:Request,db:Session=Depends(get_db)):

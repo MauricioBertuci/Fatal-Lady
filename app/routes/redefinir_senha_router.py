@@ -7,7 +7,6 @@ from app.database import get_db
 
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/views/templates")
 
 # Rota para solicitar redefinição
 @router.post("/esqueci-senha")

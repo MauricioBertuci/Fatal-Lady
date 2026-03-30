@@ -4,7 +4,6 @@ from app.controllers.logout_controler import *
 
 
 router = APIRouter()
-templates = Jinja2Templates(directory="app/views/templates")
 
 # Logout
 @router.get("/logout")

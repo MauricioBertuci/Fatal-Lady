@@ -7,9 +7,6 @@ from fastapi.templating import Jinja2Templates
 
 router = APIRouter(prefix="/me")
 
-templates = Jinja2Templates(directory="app/views/templates") 
-
-
 @router.post("/editar/dados")
 def editar_usuario(
     request: Request,

@@ -97,7 +97,7 @@ def cadastro_controller(request: Request,
           </td>
         </tr>
       </table>
-    </body>
+    </body> 
   </html>""")
 
     return {"mensagem": "Usuário cadastrado com sucesso!"}

@@ -9,7 +9,6 @@ from app.database import get_db
 from app.controllers.produtos_controller import *
 
 router = APIRouter() #rotas
-templates = Jinja2Templates(directory="app/views/templates") #front-end
 
 #pasta para dalvar imagens
 UPLOAD_DIR= "views/static/uploads"
