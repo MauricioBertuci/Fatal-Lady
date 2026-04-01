@@ -7,7 +7,6 @@ from fastapi.templating import Jinja2Templates
 from app.database import get_db
 
 router = APIRouter(prefix="/carrinho")
-templates = Jinja2Templates(directory="app/views/templates")
 
 @router.get("/", response_class=HTMLResponse)
 def list_items(request: Request, db: Session = Depends(get_db)):
