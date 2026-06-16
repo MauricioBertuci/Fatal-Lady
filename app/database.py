@@ -2,8 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Dados do Supabase
-USER = "postgres.xomisypdbkawfgzsddwn"
-PASSWORD = "fatallady"
+USER = "postgres.xomisypdbkawfgzsddwn" 
+PASSWORD = "FatalLady2026"
 HOST = "aws-1-sa-east-1.pooler.supabase.com"
 PORT = 6543
 DBNAME = "postgres"
